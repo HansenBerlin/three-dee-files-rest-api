@@ -3,7 +3,8 @@ services:
   db:
     image: postgres
     networks:
-      - backend
+      backend:
+        ipv4_address: 192.168.176.2
     environment:
       - POSTGRES_DB=threedeefilesmanagement
       - POSTGRES_USER=postgres
@@ -13,8 +14,7 @@ services:
       - ./assets/postgres.conf:/etc/postgresql/postgresql.conf
       - ./assets/postgres.sql:/docker-entrypoint-initdb.d/postgres.sql
     command: postgres -c config_file=/etc/postgresql/postgresql.conf
-    ports:
-      - "5432:5432"
+
 
   rest-api:
     image: rust-backend
@@ -27,3 +27,8 @@ services:
 
 networks:
   backend:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.176.0/24
+          gateway: 192.168.176.1

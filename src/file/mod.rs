@@ -7,7 +7,7 @@ use tokio_postgres::{NoTls};
 
 
 //static PG_CONNECTION_STRING: &str =  "host=localhost user=postgres pass=mysecretpassword ";
-static PG_CONNECTION_STRING: &str =  "postgresql://postgres:mysecretpassword@db/threedeefilesmanagement";
+static PG_CONNECTION_STRING: &str =  "postgresql://postgres:mysecretpassword@192.168.176.2/threedeefilesmanagement";
 
 pub async fn get_all_files() -> Result<Vec<common::File>, Box<dyn Error>> {
     //let mut client = Client::connect(PG_CONNECTION_STRING, NoTls)?;
