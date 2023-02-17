@@ -1,12 +1,13 @@
 [package]
 name = "three-dee-files-rest-api"
 version = "0.1.0"
-edition = "2023"
+edition = "2021"
 
 [dependencies]
 mysql = "*"
 actix-web = "4"
 serde = {version = "1.0.152", features = ["derive"]}
 serde_json = {version = "1.0.93"}
+mysql_async = { version = "*", default-features = false, features = ["native-tls-tls"] }
 
 

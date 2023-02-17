@@ -1,0 +1,25 @@
+version : '3.7'
+services:
+  db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    volumes:
+      - "./assets/schema.sql:/docker-entrypoint-initdb.d/1.sql"
+    networks:
+      - backend
+
+
+  rest-api:
+    image: rust-backend
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+    depends_on:
+      - db
+    links:
+      - db
+
+networks:
+  backend:
