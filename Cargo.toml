@@ -12,5 +12,10 @@ postgres = "*"
 tokio-postgres = "0.7.7"
 tokio = { version = "1", features = ["full"] }
 mini-redis = "0.4"
+env_logger = "0.10.0"
+log = "0.4"
+futures = "0.3"
+utoipa = { features = ["actix_extras"] }
+utoipa-swagger-ui = { features = ["actix-web"] }
 
 

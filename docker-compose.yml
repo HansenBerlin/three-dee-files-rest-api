@@ -14,12 +14,14 @@ services:
       - ./assets/postgres.conf:/etc/postgresql/postgresql.conf
       - ./assets/postgres.sql:/docker-entrypoint-initdb.d/postgres.sql
     command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    ports:
+      - "5432:5432"
 
 
   rest-api:
     image: rust-backend
     ports:
-      - "8080:8080"
+      - "8090:8080"
     networks:
       - backend
     depends_on:

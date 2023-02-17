@@ -5,6 +5,7 @@ use postgres::*;
 use tokio_postgres::{NoTls};
 
 static PG_CONNECTION_STRING: &str =  "postgresql://postgres:mysecretpassword@192.168.176.2/threedeefilesmanagement";
+//static PG_CONNECTION_STRING: &str =  "postgresql://postgres:mysecretpassword@127.0.0.1/threedeefilesmanagement";
 
 pub async fn get_all_files() -> Result<Vec<common::File>, Box<dyn Error>> {
     let (client, connection) = tokio_postgres::connect(PG_CONNECTION_STRING, NoTls).await?;
@@ -16,7 +17,7 @@ pub async fn get_all_files() -> Result<Vec<common::File>, Box<dyn Error>> {
     });
 
     let mut vec = Vec::new();
-    let query = "SELECT \"Id\", \"Name\", \"Author\", \"Created\", \"Size\", \"Downloads\", \"AverageRating\" FROM file;";
+    let query = "SELECT \"Id\", \"Name\", \"Author\", \"Created\"::Text, \"Size\", \"Downloads\", \"AverageRating\" FROM file;";
     for row in client.query(query, &[]).await? {
         let person = common::File {
             pk_id: row.get(0),
@@ -41,7 +42,7 @@ pub async fn get_single_file(id: u32) -> Result<Vec<common::File>, Box<dyn Error
         }
     });
 
-    let query = format!("SELECT \"Id\", \"Name\", \"Author\", \"Created\", \"Size\", \"Downloads\", \"AverageRating\" FROM file WHERE \"Id\" = {};", id);
+    let query = format!("SELECT \"Id\", \"Name\", \"Author\", \"Created\"::Text, \"Size\", \"Downloads\", \"AverageRating\" FROM file WHERE \"Id\" = {};", id);
     let mut vec:Vec<common::File> = Vec::new();
     for row in client.query(&*query, &[]).await? {
         let person = common::File {
@@ -67,7 +68,7 @@ pub async fn get_file_history(file_fk: u32) -> Result<Vec<common::FileHistory>, 
         }
     });
 
-    let query = format!("SELECT \"Id\", \"ChangedOn\", \"ByAuthor\", \"State\", \"Content\" FROM filehistory WHERE \"File_fk\" = {};", file_fk);
+    let query = format!("SELECT \"Id\", \"ChangedOn\"::Text, \"ByAuthor\", \"State\", \"Content\" FROM filehistory WHERE \"File_fk\" = {};", file_fk);
 
     let mut vec = Vec::new();
     for row in &client.query(&*query, &[]).await? {
