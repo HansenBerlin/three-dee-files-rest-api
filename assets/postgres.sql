@@ -1,6 +1,4 @@
-
-
-CREATE TABLE test.File
+CREATE TABLE File
 (
     "Id" SERIAL PRIMARY KEY,
     "Name" varchar(255) NOT NULL,
@@ -11,7 +9,7 @@ CREATE TABLE test.File
     "AverageRating" real NOT NULL
 );
 
-CREATE TABLE test.FileHistory
+CREATE TABLE FileHistory
 (
     "Id" SERIAL PRIMARY KEY,
     "ChangedOn" timestamp NOT NULL,
@@ -20,11 +18,11 @@ CREATE TABLE test.FileHistory
     "Content" text NOT NULL,
     "File_fk" integer NOT NULL,
     CONSTRAINT "FileHistory_File_Id_fk"
-        FOREIGN KEY ("File_fk") REFERENCES test.File ("Id")
+        FOREIGN KEY ("File_fk") REFERENCES File ("Id")
 );
 
 -- Insert dummy data into the file table
-INSERT INTO test.File ("Name", "Author", "Created", "Size", "Downloads", "AverageRating")
+INSERT INTO File ("Name", "Author", "Created", "Size", "Downloads", "AverageRating")
 VALUES
     ('jazzcat.stl', 'Maxine Jenkins', '2022-05-01 10:30:00', FLOOR(RANDOM()*(100000000-100000+1)+100000), 10, ROUND(RANDOM()*(5-1)+1)),
     ('quantumquark.stl', 'Caitlin Lee', '2022-02-14 13:45:00', FLOOR(RANDOM()*(100000000-100000+1)+100000), 5, ROUND(RANDOM()*(5-1)+1)),
@@ -42,7 +40,7 @@ WITH files AS (
         "Id",
         "Name"
     FROM
-        test.File
+        File
     WHERE
             "Name" LIKE '%.stl%'
 ), history AS (
@@ -86,7 +84,7 @@ WITH files AS (
         ) n
 )
 INSERT INTO
-    test.FileHistory ("File_fk", "ChangedOn", "ByAuthor", "State", "Content")
+    FileHistory ("File_fk", "ChangedOn", "ByAuthor", "State", "Content")
 SELECT
     File_fk,
     ChangedOn,
