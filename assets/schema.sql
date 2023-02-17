@@ -28,8 +28,8 @@ create table ThreeDeeFilesManagement.FileHistory
 
 
 
--- Insert dummy data into the File table
-INSERT INTO ThreeDeeFilesManagement.File (Name, Author, Created, Size, Downloads, AverageRating)
+-- Insert dummy data into the file table
+INSERT INTO File (Name, Author, Created, Size, Downloads, AverageRating)
 VALUES
     ('jazzcat.stl', 'Maxine Jenkins', '2022-05-01 10:30:00', FLOOR(RAND()*(100000000-100000+1)+100000), 10, ROUND(RAND()*(5-1)+1,1)),
     ('quantumquark.stl', 'Caitlin Lee', '2022-02-14 13:45:00', FLOOR(RAND()*(100000000-100000+1)+100000), 5, ROUND(RAND()*(5-1)+1,1)),

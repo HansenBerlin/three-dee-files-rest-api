@@ -11,5 +11,4 @@ COPY --from=build /app/lib /app/lib
 COPY --from=build /lib64/ld-linux-x86-64.so.2 /lib64/ld-linux-x86-64.so.2
 COPY --from=build /app/target/release/three-dee-files-rest-api three-dee-files-rest-api
 ENV LD_LIBRARY_PATH=/app/lib
-RUN echo DATABASE_URL=mysql://root:example@127.0.0.1:3306/ThreeDeeFilesManagement > .env
 ENTRYPOINT ["./three-dee-files-rest-api"]
