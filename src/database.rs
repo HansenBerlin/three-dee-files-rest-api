@@ -5,8 +5,8 @@ pub mod database_connection{
     use crate::models::file::*;
     use chrono::prelude::*;
 
-    //static PG_CONNECTION_STRING: &str =  "postgresql://postgres:mysecretpassword@192.168.176.2/threedeefilesmanagement";
-    static PG_CONNECTION_STRING: &str =  "postgresql://postgres:mysecretpassword@127.0.0.1/threedeefilesmanagement";
+    static PG_CONNECTION_STRING: &str =  "postgresql://postgres:mysecretpassword@192.168.176.2/threedeefilesmanagement";
+    //static PG_CONNECTION_STRING: &str =  "postgresql://postgres:mysecretpassword@127.0.0.1/threedeefilesmanagement";
 
     pub async fn get_all_files() -> Result<Vec<File>, Box<dyn Error>> {
         let client = spawn_client().await?;
