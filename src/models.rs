@@ -15,6 +15,13 @@ pub mod file {
     }
 
     #[derive(Serialize, Deserialize, Debug, ToSchema)]
+    pub struct PostFile {
+        pub name: String,
+        pub author: String,
+        pub size: i64,
+    }
+
+    #[derive(Serialize, Deserialize, Debug, ToSchema)]
     pub struct FileHistory {
         pub pk_id: i32,
         pub changed: String,
