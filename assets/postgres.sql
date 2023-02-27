@@ -1,98 +1,158 @@
-CREATE TABLE File
+CREATE TABLE user_account
 (
-    "Id" SERIAL PRIMARY KEY,
-    "Name" varchar(255) NOT NULL,
-    "Author" varchar(255) NOT NULL,
-    "Created" timestamp NOT NULL,
-    "Size" bigint NOT NULL,
-    "Downloads" integer NOT NULL,
-    "AverageRating" real NOT NULL
+  "id" SERIAL PRIMARY KEY,
+  "name" varchar(255) NOT NULL,
+  "first_name" varchar(255) NOT NULL ,
+  "last_name" varchar(255) NOT NULL ,
+  "mail" varchar(255) NOT NULL,
+  "member_since" timestamp NOT NULL ,
+  "two_factor" bool NOT NULL  
 );
 
-CREATE TABLE FileHistory
+CREATE TABLE two_factor
 (
-    "Id" SERIAL PRIMARY KEY,
-    "ChangedOn" timestamp NOT NULL,
-    "ByAuthor" varchar(255) NOT NULL,
-    "State" varchar(255) NOT NULL,
-    "Content" text NOT NULL,
-    "File_fk" integer NOT NULL,
-    CONSTRAINT "FileHistory_File_Id_fk"
-        FOREIGN KEY ("File_fk") REFERENCES File ("Id")
+    "id" SERIAL PRIMARY KEY ,
+    "totp" varchar(128) NOT NULL ,
+    "user_fk" integer NOT NULL ,
+    CONSTRAINT "two_factor_user_id_fk"
+        FOREIGN KEY ("user_fk") REFERENCES user_account ("id")
 );
 
--- Insert dummy data into the file table
-INSERT INTO File ("Name", "Author", "Created", "Size", "Downloads", "AverageRating")
-VALUES
-    ('jazzcat.stl', 'Maxine Jenkins', '2022-05-01 10:30:00', FLOOR(RANDOM()*(100000000-100000+1)+100000), 10, ROUND(RANDOM()*(5-1)+1)),
-    ('quantumquark.stl', 'Caitlin Lee', '2022-02-14 13:45:00', FLOOR(RANDOM()*(100000000-100000+1)+100000), 5, ROUND(RANDOM()*(5-1)+1)),
-    ('silverstar.stl', 'Rocco Ramirez', '2022-08-27 08:20:00', FLOOR(RANDOM()*(100000000-100000+1)+100000), 8, ROUND(RANDOM()*(5-1)+1)),
-    ('neonbutterfly.stl', 'Janae Burke', '2022-11-21 16:10:00', FLOOR(RANDOM()*(100000000-100000+1)+100000), 3, ROUND(RANDOM()*(5-1)+1)),
-    ('astrodrone.stl', 'Deangelo Burgess', '2022-04-08 09:00:00', FLOOR(RANDOM()*(100000000-100000+1)+100000), 12, ROUND(RANDOM()*(5-1)+1)),
-    ('cyberpuma.stl', 'Leila Mccormick', '2022-09-05 14:15:00', FLOOR(RANDOM()*(100000000-100000+1)+100000), 7, ROUND(RANDOM()*(5-1)+1)),
-    ('frostblade.stl', 'Jessie Moreno', '2022-06-30 11:25:00', FLOOR(RANDOM()*(100000000-100000+1)+100000), 9, ROUND(RANDOM()*(5-1)+1)),
-    ('emeraldgolem.stl', 'Randy Bennett', '2022-03-12 15:50:00', FLOOR(RANDOM()*(100000000-100000+1)+100000), 6, ROUND(RANDOM()*(5-1)+1)),
-    ('glitchunicorn.stl', 'Simone Chandler', '2022-10-17 07:40:00', FLOOR(RANDOM()*(100000000-100000+1)+100000), 4, ROUND(RANDOM()*(5-1)+1)),
-    ('dystopianangel.stl', 'Reese Ferguson', '2022-07-23 12:35:00', FLOOR(RANDOM()*(100000000-100000+1)+100000), 11, ROUND(RANDOM()*(5-1)+1));
+CREATE TABLE two_factor_recovery_codes
+(
+  "id" SERIAL PRIMARY KEY,
+  "code" varchar(16) NOT NULL ,
+  "user_fk" integer NOT NULL ,
+  CONSTRAINT "two_factor_recovery_codes_user_id_fk"
+    FOREIGN KEY ("user_fk") REFERENCES user_account ("id")
+);
 
-WITH files AS (
-    SELECT
-        "Id",
-        "Name"
-    FROM
-        File
-    WHERE
-            "Name" LIKE '%.stl%'
-), history AS (
-    SELECT
-        f."Id" AS File_fk,
-        (DATE '2023-02-17' - (FLOOR(RANDOM() * 3650) || ' days')::INTERVAL)::TIMESTAMP AS ChangedOn,
-            CONCAT(n.first, ' ', n.last) AS ByAuthor,
-        CASE
-            WHEN RANDOM() < 0.5 THEN 'Changed'
-            ELSE 'Modified'
-            END AS State,
-        CONCAT('This is the content for ', f."Name", ' version ', s.seq) AS Content
-    FROM
-        files f
-            JOIN (
-            SELECT 1 AS seq UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5
-            UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10
-        ) s ON RANDOM() < 0.6
-            CROSS JOIN (
-            SELECT
-                'Emma' AS first, 'Williams' AS last
-            UNION ALL SELECT 'Noah', 'Johnson'
-            UNION ALL SELECT 'Liam', 'Brown'
-            UNION ALL SELECT 'Ava', 'Jones'
-            UNION ALL SELECT 'Olivia', 'Garcia'
-            UNION ALL SELECT 'Sophia', 'Miller'
-            UNION ALL SELECT 'Isabella', 'Davis'
-            UNION ALL SELECT 'Mia', 'Rodriguez'
-            UNION ALL SELECT 'Charlotte', 'Martinez'
-            UNION ALL SELECT 'Amelia', 'Hernandez'
-            UNION ALL SELECT 'Evelyn', 'Lopez'
-            UNION ALL SELECT 'Abigail', 'Gonzalez'
-            UNION ALL SELECT 'Harper', 'Perez'
-            UNION ALL SELECT 'Emily', 'Gomez'
-            UNION ALL SELECT 'Elizabeth', 'Smith'
-            UNION ALL SELECT 'Sofia', 'Lee'
-            UNION ALL SELECT 'Victoria', 'Liu'
-            UNION ALL SELECT 'Chloe', 'Brown'
-            UNION ALL SELECT 'Camila', 'Kim'
-            UNION ALL SELECT 'Madison', 'Yang'
-        ) n
-)
-INSERT INTO
-    FileHistory ("File_fk", "ChangedOn", "ByAuthor", "State", "Content")
-SELECT
-    File_fk,
-    ChangedOn,
-    ByAuthor,
-    State,
-    Content
-FROM
-    history
-ORDER BY
-    RANDOM()
-LIMIT 100;
+-- ToDo need to add more at implementation
+CREATE TABLE token
+(
+  "id" SERIAL PRIMARY KEY ,
+  "token" varchar(512) NOT NULL ,
+  "expire" timestamp NOT NULL ,
+  "user_fk" integer NOT NULL ,
+  CONSTRAINT "token_user_id_fk"
+    FOREIGN KEY ("user_fk") REFERENCES user_account ("id")
+);
+
+CREATE TABLE manufacturer
+(
+    "id" SERIAL PRIMARY KEY ,
+    "name" varchar(255) NOT NULL ,
+    "contact" varchar(1024) ,
+    "website" varchar(512)
+);
+
+CREATE TABLE printer
+(
+    "id" SERIAL PRIMARY KEY ,
+    "name" varchar(255) NOT NULL ,
+    "release" timestamp,
+    "manufacturer_fk" integer,
+    CONSTRAINT "printer_manufacturer_id_fk"
+        FOREIGN KEY ("manufacturer_fk") REFERENCES Manufacturer ("id")
+);
+
+CREATE TABLE material_group
+(
+    "id" SERIAL PRIMARY KEY ,
+    "name" varchar(255) 
+);
+
+CREATE TABLE material
+(
+    "id" SERIAL PRIMARY KEY ,
+    "name" varchar(255) NOT NULL ,
+    "color" varchar(255),
+    "temperature_nozzle" float,
+    "temperature_bed" float,
+    "material_group_fk" integer not null ,
+    CONSTRAINT "material_material_group_id_fk"
+        FOREIGN KEY ("material_group_fk") REFERENCES material_group ("id"),
+    "manufacturer_fk" integer NOT NULL,
+    CONSTRAINT "material_manufacturer_id_fk"
+        FOREIGN KEY ("manufacturer_fk") REFERENCES manufacturer ("id")
+);
+
+CREATE TABLE category
+(
+    "name" varchar(255) PRIMARY KEY 
+);
+
+CREATE TABLE model
+(
+    "id" SERIAL PRIMARY KEY ,
+    "name" varchar(255) NOT NULL ,
+    "created" timestamp NOT NULL ,
+    "author" integer NOT NULL,
+    CONSTRAINT "model_user_account_id_fk"
+        FOREIGN KEY ("author") REFERENCES user_account ("id"),
+    "modified" timestamp NOT NULL ,
+    "category_fk" varchar(255),
+    CONSTRAINT "model_category_id_fk"
+        FOREIGN KEY ("category_fk") REFERENCES category ("name")    
+);
+
+CREATE TABLE file
+(
+    "id" SERIAL PRIMARY KEY,
+    "name" varchar(255) NOT NULL,
+    "author" integer NOT NULL,
+    CONSTRAINT "file_user_account_id_fk"
+        FOREIGN KEY ("author") REFERENCES user_account ("id"),
+    "created" timestamp NOT NULL,
+    "size" bigint NOT NULL,
+    "downloads" integer NOT NULL,
+    "average_Rating" real NOT NULL
+);
+
+CREATE TABLE model_file
+(
+    "id" SERIAL PRIMARY KEY ,
+    "model_fk" integer NOT NULL ,
+    CONSTRAINT "model_file_model_id_fk"
+        FOREIGN KEY ("model_fk") REFERENCES model ("id"),
+    "file_fk" integer NOT NULL ,
+    CONSTRAINT "model_file_id_fk"
+        FOREIGN KEY ("file_fk") REFERENCES file ("id")
+);
+
+--ToDo Settings need to specify
+CREATE TABLE gcode
+(
+    "id" SERIAL PRIMARY KEY ,
+    "name" varchar(255) NOT NULL ,
+    "settings" varchar(255),
+    "model_file_fk" integer NOT NULL ,
+    CONSTRAINT "gcode_model_file_id_fk"
+        FOREIGN KEY ("model_file_fk") REFERENCES model_file ("id"),
+    "file_fk" integer NOT NULL ,
+    CONSTRAINT "gcode_file_id_fk"
+        FOREIGN KEY ("file_fk") REFERENCES file ("id"),
+    "printer_fk" integer NOT NULL ,
+    CONSTRAINT "gcode_printer_id_fk"
+        FOREIGN KEY ("printer_fk") REFERENCES Printer ("id"),
+    "material_fk" integer NOT NULL ,
+    CONSTRAINT "gcode_material_id_fk"
+        FOREIGN KEY ("material_fk") REFERENCES material ("id")
+);
+
+CREATE TABLE file_history
+(
+    "id" SERIAL PRIMARY KEY,
+    "changed_on" timestamp NOT NULL,
+    "by_author" integer NOT NULL,
+    CONSTRAINT "file_history_user_account_id_fk"
+        FOREIGN KEY ("by_author") REFERENCES user_account ("id"),
+    "state" varchar(255) NOT NULL,
+    "content" text NOT NULL,
+    "file_old_fk" integer NOT NULL,
+    CONSTRAINT "file_history_file_old_id_fk"
+        FOREIGN KEY ("file_old_fk") REFERENCES file ("id"),
+    "file_new_fk" integer NOT NULL,
+    CONSTRAINT "file_history_file_new_id_fk"
+        FOREIGN KEY ("file_new_fk") REFERENCES file ("id")
+);
